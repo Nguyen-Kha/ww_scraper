@@ -16,7 +16,7 @@ async function setup(email, password, page){
 }
 
 async function getJobInfo(page){
-    const startPageNumber = 16;
+    const startPageNumber = 3;
     const endPageNumber = 15;
 
     // Get total amount of jobs
@@ -33,6 +33,7 @@ async function getJobInfo(page){
     // for(var a = 3; a < totalPages + 3; a++){ //endPageNumber
     for(var a = startPageNumber; a < totalPages + 3; a++){ 
 
+        // // Not sure why I put this here
         // Get total amount of jobs
         await page.waitForSelector('.badge-info');
         let jobsElement = await page.$('.badge-info')
@@ -84,6 +85,34 @@ async function getJobInfo(page){
                 jobIDValue = jobIDValue.trim();
                 jobIDValue = parseInt(jobIDValue);
                 testObject.jobID = jobIDValue;
+
+                // Get Job Title
+                let jobTitle = '';
+                const jobTitleEnding = ') > td:nth-child(4)';
+                jobTitle = jobTitle.concat(starting, i, jobTitleEnding);
+                let jobTitleSelector = await page.waitForSelector(jobTitle);
+                let jobTitleValue = await page.evaluate(el => el.innerText, jobTitleSelector);
+                jobTitleValue = jobTitleValue.trim();
+                testObject.title = jobTitleValue;
+
+                // Get Company Name
+                let companyName = '';
+                const companyNameEnding = ') > td:nth-child(5)';
+                companyName = companyName.concat(starting, i, companyNameEnding);
+                let companyNameSelector = await page.waitForSelector(companyName);
+                let companyNameValue = await page.evaluate(el => el.innerText, companyNameSelector);
+                companyNameValue = companyNameValue.trim();
+                testObject.companyName = companyNameValue;
+
+                // Get Amount of Openings
+                let openings = '';
+                const openingsEnding = ') > td:nth-child(7)';
+                openings = openings.concat(starting, i, openingsEnding);
+                let openingsSelector = await page.waitForSelector(openings);
+                let openingsValue = await page.evaluate(el => el.innerText, openingsSelector);
+                openingsValue = openingsValue.trim();
+                openingsValue = parseInt(openingsValue);
+                testObject.openings = openingsValue;
         
                 await page.click(dropdown);
                 const newPagePromise = new Promise(x => page.once('popup', x));
@@ -92,7 +121,7 @@ async function getJobInfo(page){
                 // Switch to new Page
                 
                 const newPage = await newPagePromise;   
-                await newPage.waitFor(100); 
+                await newPage.waitFor(300); 
         
                 // For loop for Job Posting Information
                 // #postingDiv > div:nth-child(1) > div.panel-body > table > tbody > tr:nth-child(   i   ) > td:nth-child(   1 or 2   )
@@ -136,12 +165,12 @@ async function getJobInfo(page){
                         case 'Job Type:':
                             testObject.type = jobPostInfoValue;
                             break;
-                        case 'Job Title:':
-                            testObject.title = jobPostInfoValue;
-                            break;
-                        case 'Number of Job Openings:':
-                            testObject.openings = parseInt(jobPostInfoValue);
-                            break;
+                        // case 'Job Title:':
+                        //     testObject.title = jobPostInfoValue;
+                        //     break;
+                        // case 'Number of Job Openings:':
+                        //     testObject.openings = parseInt(jobPostInfoValue);
+                        //     break;
                         case 'Job Category (NOC):':
                             testObject.categories = jobPostInfoValue;
                             break;
@@ -252,34 +281,34 @@ async function getJobInfo(page){
         
                 // For loop for Company Information 
                 // #postingDiv > div:nth-child(3) > div.panel-body > table > tbody > tr:nth-child(   i   ) > td:nth-child(   1 or 2   )
-                let jobCompanyInfoRowsElement = await newPage.$('#postingDiv > div:nth-child(3) > div.panel-body > table > tbody');
-                let jobCompanyInfoRows = await newPage.evaluate(el => el.childElementCount, jobCompanyInfoRowsElement);
+                // let jobCompanyInfoRowsElement = await newPage.$('#postingDiv > div:nth-child(3) > div.panel-body > table > tbody');
+                // let jobCompanyInfoRows = await newPage.evaluate(el => el.childElementCount, jobCompanyInfoRowsElement);
                 
-                const jobCompanyInfoStarting = '#postingDiv > div:nth-child(3) > div.panel-body > table > tbody > tr:nth-child(';
-                const jobCompanyInfoHeadEnd = ') > td:nth-child(1)';
-                const jobCompanyInfoValueEnd = ') > td:nth-child(2)';
+                // const jobCompanyInfoStarting = '#postingDiv > div:nth-child(3) > div.panel-body > table > tbody > tr:nth-child(';
+                // const jobCompanyInfoHeadEnd = ') > td:nth-child(1)';
+                // const jobCompanyInfoValueEnd = ') > td:nth-child(2)';
 
-                for(var d = 1; d < jobCompanyInfoRows + 1; d++){
-                    let jobCompanyInfoHeaderElementSelector = '';
-                    let jobCompanyInfoValueElementSelector = '';
+                // for(var d = 1; d < jobCompanyInfoRows + 1; d++){
+                //     let jobCompanyInfoHeaderElementSelector = '';
+                //     let jobCompanyInfoValueElementSelector = '';
         
-                    jobCompanyInfoHeaderElementSelector = jobCompanyInfoHeaderElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoHeadEnd);
-                    jobCompanyInfoValueElementSelector = jobCompanyInfoValueElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoValueEnd);
+                //     jobCompanyInfoHeaderElementSelector = jobCompanyInfoHeaderElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoHeadEnd);
+                //     jobCompanyInfoValueElementSelector = jobCompanyInfoValueElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoValueEnd);
         
-                    // Check Header
-                    let jobCompanyInfoHeaderElement = await newPage.waitForSelector(jobCompanyInfoHeaderElementSelector);
-                    let jobCompanyInfoHeader = await newPage.evaluate(el => el.innerText, jobCompanyInfoHeaderElement);
-                    jobCompanyInfoHeader = jobCompanyInfoHeader.trim();
+                //     // Check Header
+                //     let jobCompanyInfoHeaderElement = await newPage.waitForSelector(jobCompanyInfoHeaderElementSelector);
+                //     let jobCompanyInfoHeader = await newPage.evaluate(el => el.innerText, jobCompanyInfoHeaderElement);
+                //     jobCompanyInfoHeader = jobCompanyInfoHeader.trim();
         
-                    let jobCompanyInfoValueElement = await newPage.waitForSelector(jobCompanyInfoValueElementSelector);
-                    let jobCompanyInfoValue = await newPage.evaluate(el => el.innerText, jobCompanyInfoValueElement);
-                    jobCompanyInfoValue = jobCompanyInfoValue.trim();
+                //     let jobCompanyInfoValueElement = await newPage.waitForSelector(jobCompanyInfoValueElementSelector);
+                //     let jobCompanyInfoValue = await newPage.evaluate(el => el.innerText, jobCompanyInfoValueElement);
+                //     jobCompanyInfoValue = jobCompanyInfoValue.trim();
                     
-                    temp = '';
-                    if(jobCompanyInfoHeader == 'Organization:'){
-                        testObject.companyName = jobCompanyInfoValue;
-                    }
-                }
+                //     temp = '';
+                //     if(jobCompanyInfoHeader == 'Organization:'){
+                //         testObject.companyName = jobCompanyInfoValue;
+                //     }
+                // }
         
                 await newPage.close();
                 await page.bringToFront();
@@ -346,6 +375,34 @@ async function getJobInfo(page){
                 jobIDValue = jobIDValue.trim();
                 jobIDValue = parseInt(jobIDValue);
                 testObject.jobID = jobIDValue;
+
+                // Get Job Title
+                let jobTitle = '';
+                const jobTitleEnding = ') > td:nth-child(4)';
+                jobTitle = jobTitle.concat(starting, i, jobTitleEnding);
+                let jobTitleSelector = await page.waitForSelector(jobTitle);
+                let jobTitleValue = await page.evaluate(el => el.innerText, jobTitleSelector);
+                jobTitleValue = jobTitleValue.trim();
+                testObject.title = jobTitleValue;
+
+                // Get Company Name
+                let companyName = '';
+                const companyNameEnding = ') > td:nth-child(5)';
+                companyName = companyName.concat(starting, i, companyNameEnding);
+                let companyNameSelector = await page.waitForSelector(companyName);
+                let companyNameValue = await page.evaluate(el => el.innerText, companyNameSelector);
+                companyNameValue = companyNameValue.trim();
+                testObject.companyName = companyNameValue;
+
+                // Get Amount of Openings
+                let openings = '';
+                const openingsEnding = ') > td:nth-child(7)';
+                openings = openings.concat(starting, i, openingsEnding);
+                let openingsSelector = await page.waitForSelector(openings);
+                let openingsValue = await page.evaluate(el => el.innerText, openingsSelector);
+                openingsValue = openingsValue.trim();
+                openingsValue = parseInt(openingsValue);
+                testObject.openings = openingsValue;
         
                 await page.click(dropdown);
                 const newPagePromise = new Promise(x => page.once('popup', x));
@@ -398,12 +455,12 @@ async function getJobInfo(page){
                         case 'Job Type:':
                             testObject.type = jobPostInfoValue;
                             break;
-                        case 'Job Title:':
-                            testObject.title = jobPostInfoValue;
-                            break;
-                        case 'Number of Job Openings:':
-                            testObject.openings = parseInt(jobPostInfoValue);
-                            break;
+                        // case 'Job Title:':
+                        //     testObject.title = jobPostInfoValue;
+                        //     break;
+                        // case 'Number of Job Openings:':
+                        //     testObject.openings = parseInt(jobPostInfoValue);
+                        //     break;
                         case 'Job Category (NOC):':
                             testObject.categories = jobPostInfoValue;
                             break;
@@ -514,35 +571,35 @@ async function getJobInfo(page){
                 // #postingDiv > div:nth-child(3) > div.panel-body > table > tbody > tr:nth-child(   i   ) > td:nth-child(   1 or 2   )
                 let jobCompanyInfoRowsElement = await newPage.$('#postingDiv > div:nth-child(3) > div.panel-body > table > tbody');
                 let jobCompanyInfoRows = await newPage.evaluate(el => el.childElementCount, jobCompanyInfoRowsElement);
-                console.log(jobCompanyInfoRows);
+                // console.log(jobCompanyInfoRows);
                 
                 const jobCompanyInfoStarting = '#postingDiv > div:nth-child(3) > div.panel-body > table > tbody > tr:nth-child(';
                 const jobCompanyInfoHeadEnd = ') > td:nth-child(1)';
                 const jobCompanyInfoValueEnd = ') > td:nth-child(2)';
 
-                for(var d = 1; d < jobCompanyInfoRows + 1; d++){
-                    let jobCompanyInfoHeaderElementSelector = '';
-                    let jobCompanyInfoValueElementSelector = '';
+                // for(var d = 1; d < jobCompanyInfoRows + 1; d++){
+                //     let jobCompanyInfoHeaderElementSelector = '';
+                //     let jobCompanyInfoValueElementSelector = '';
         
-                    jobCompanyInfoHeaderElementSelector = jobCompanyInfoHeaderElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoHeadEnd);
-                    jobCompanyInfoValueElementSelector = jobCompanyInfoValueElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoValueEnd);
+                //     jobCompanyInfoHeaderElementSelector = jobCompanyInfoHeaderElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoHeadEnd);
+                //     jobCompanyInfoValueElementSelector = jobCompanyInfoValueElementSelector.concat(jobCompanyInfoStarting, d, jobCompanyInfoValueEnd);
         
-                    // Check Header
-                    let jobCompanyInfoHeaderElement = await newPage.waitForSelector(jobCompanyInfoHeaderElementSelector);
-                    let jobCompanyInfoHeader = await newPage.evaluate(el => el.innerText, jobCompanyInfoHeaderElement);
-                    jobCompanyInfoHeader = jobCompanyInfoHeader.trim();
+                //     // Check Header
+                //     let jobCompanyInfoHeaderElement = await newPage.waitForSelector(jobCompanyInfoHeaderElementSelector);
+                //     let jobCompanyInfoHeader = await newPage.evaluate(el => el.innerText, jobCompanyInfoHeaderElement);
+                //     jobCompanyInfoHeader = jobCompanyInfoHeader.trim();
         
-                    let jobCompanyInfoValueElement = await newPage.waitForSelector(jobCompanyInfoValueElementSelector);
-                    let jobCompanyInfoValue = await newPage.evaluate(el => el.innerText, jobCompanyInfoValueElement);
-                    jobCompanyInfoValue = jobCompanyInfoValue.trim();
-                    console.log(jobCompanyInfoHeader);
-                    console.log(jobCompanyInfoValue);
+                //     let jobCompanyInfoValueElement = await newPage.waitForSelector(jobCompanyInfoValueElementSelector);
+                //     let jobCompanyInfoValue = await newPage.evaluate(el => el.innerText, jobCompanyInfoValueElement);
+                //     jobCompanyInfoValue = jobCompanyInfoValue.trim();
+                //     console.log(jobCompanyInfoHeader);
+                //     console.log(jobCompanyInfoValue);
                     
-                    temp = '';
-                    if(jobCompanyInfoHeader == 'Organization:'){
-                        testObject.companyName = jobCompanyInfoValue;
-                    }
-                }
+                //     temp = '';
+                //     if(jobCompanyInfoHeader == 'Organization:'){
+                //         testObject.companyName = jobCompanyInfoValue;
+                //     }
+                // }
         
                 await newPage.close();
                 await page.bringToFront();
@@ -556,7 +613,7 @@ async function getJobInfo(page){
 
     testArrayJSON = JSON.stringify(testArray);
     var fs = require('fs');
-    fs.writeFile("2020-09-19____16-end-new.json", testArrayJSON, function(err) {
+    fs.writeFile("2020-10-17.json", testArrayJSON, function(err) {
         if (err) {
             console.log(err);
         }
@@ -578,4 +635,4 @@ async function scrape(email, password){
 
 // Get email
 // Get password
-scrape('kh8nguye@uwaterloo.ca', '').catch(console.error);
+scrape('@uwaterloo.ca', '').catch(console.error);

@@ -25,8 +25,10 @@ async function setup(email, password, context){
     await context.waitFor(3000);
 }
 
-async function reLogin(){
-
+async function reLogin(email, password, context){
+    await context.goto('https://waterlooworks.uwaterloo.ca/logout.htm');
+    await context.waitFor(2000);
+    await setup(email, password, context);
 }
 
 async function getTotalAmountOfJobs(context){
@@ -206,7 +208,7 @@ function assignJobAppValues(testObject, jobAppInfoHeader, jobAppInfoValue){
 module.exports = {
     getInnerText,
     setup,
-    // reLogin,
+    reLogin,
     getTotalAmountOfJobs,
     getAmountOfJobsOnPage,
     getBasicJobInfo,

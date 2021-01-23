@@ -3,7 +3,7 @@
 const YOUR_EMAIL = '@uwaterloo.ca';
 const YOUR_PASSWORD = '';
 const startPageNumber = 3;
-const endPageNumber = 15;
+// const endPageNumber = 15;
 const FILE_NAME = '2021-MM-DD.json';
 
 ////////////////////////////////////////////

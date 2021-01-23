@@ -21,7 +21,7 @@ async function getJobInfo(page){
 
     testArray = [];
 
-    // for(var a = 3; a < totalPages + 3; a++){ //endPageNumber
+    // for(var a = 3; a < totalPages + 3; a++){ //endPageNumber replaced by totalPages
     for(var a = startPageNumber; a < totalPages + 3; a++){ 
 
         let jobsOnPage = await scraper.getAmountOfJobsOnPage(page);
@@ -216,12 +216,7 @@ async function getJobInfo(page){
             await page.waitFor(2000);
 
             // run the for loop below here
-            let jobsOnPageElement = await page.$('#postingsTable > tbody');
-            let jobsOnPage = await page.evaluate((el) => {
-                let temp = el.childElementCount;
-                return temp;
-            }, jobsOnPageElement);
-            // console.log(jobsOnPage);
+            let jobsOnPage = await scraper.getAmountOfJobsOnPage(page);
             console.log(jobsOnPage);
 
             for(var i = 1; i <= jobsOnPage; i++){

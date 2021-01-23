@@ -78,7 +78,7 @@ async function getJobInfo(page){
             // Switch to new Page
             
             const newPage = await newPagePromise;   
-            await newPage.waitFor(300); 
+            await newPage.waitFor(700); 
     
             // For loop for Job Posting Information
             // #postingDiv > div:nth-child(1) > div.panel-body > table > tbody > tr:nth-child(   i   ) > td:nth-child(   1 or 2   )
@@ -191,7 +191,7 @@ async function getJobInfo(page){
             
             // Switch to new Page
             const newPage = await newPagePromise;   
-            await newPage.waitFor(300); 
+            await newPage.waitFor(700); 
     
             // For loop for Job Posting Information
             // #postingDiv > div:nth-child(1) > div.panel-body > table > tbody > tr:nth-child(   i   ) > td:nth-child(   1 or 2   )

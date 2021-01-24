@@ -43,7 +43,7 @@ async function getTotalAmountOfJobs(context){
 
 async function getAmountOfJobsOnPage(context){
     let jobsOnPageElement = await context.$('#postingsTable > tbody');
-    let jobsOnPage = await page.evaluate((el) => {
+    let jobsOnPage = await context.evaluate((el) => {
         let temp = el.childElementCount;
         return temp;
     }, jobsOnPageElement);

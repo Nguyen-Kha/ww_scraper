@@ -22,8 +22,7 @@ async function getJobInfo(page){
     testArray = [];
 
     // First for loop - accounts if there are less than 3 pages
-    for(let a = startPageNumber; a < max(startPageNumber + 3, totalPages + 3); a++){
-        let jobsOnPage = await scraper.getAmountOfJobsOnPage(page);
+    for(let a = startPageNumber; a < Math.min(startPageNumber + 3, totalPages + 3); a++){
 
         // If scraper is not on the first page, it will need to click to the new page
         if(a != 3){
@@ -36,6 +35,8 @@ async function getJobInfo(page){
             await page.click(pageNav);
             await page.waitFor(2000);
         }
+
+        let jobsOnPage = await scraper.getAmountOfJobsOnPage(page);
 
         // Execute regular scrape
         for(let i = 1; i <= jobsOnPage; i++){
@@ -150,6 +151,8 @@ async function getJobInfo(page){
         pageNav = pageNav.concat(startNav, a, endNav);
         await page.click(pageNav);
         await page.waitFor(2000);
+
+        let jobsOnPage = await scraper.getAmountOfJobsOnPage(page);
 
         // Execute regular scrape
         for(let i = 1; i <= jobsOnPage; i++){

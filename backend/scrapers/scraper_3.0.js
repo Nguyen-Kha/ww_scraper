@@ -52,6 +52,9 @@ async function getJobInfo(page){
 
             // Get Job Title
             let jobTitleValue = await scraper.getBasicJobTitle(i, page);
+            if(jobTitleValue.includes('NEW ')){
+                jobTitleValue = jobTitleValue.replace('NEW ', '');
+            }
             testObject.title = jobTitleValue;
 
             // Get Company Name

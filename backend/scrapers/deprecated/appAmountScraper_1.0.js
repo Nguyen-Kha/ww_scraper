@@ -2,6 +2,14 @@
 Script must be run on Tuesday after 9:00 AM, before looking at new jobs
 */
 
+////////    SET UP VARIABLES HERE   ////////
+
+const YOUR_EMAIL = '@uwaterloo.ca';
+const YOUR_PASSWORD = '';
+const FILE_NAME = '2021-MM-DD_viewed_app_amount.json';
+
+////////////////////////////////////////////
+
 const puppeteer = require('puppeteer');
 
 async function setup(email, password, page){
@@ -142,7 +150,6 @@ async function getAppAmount(page){
                 let ___Selector = await page.waitForSelector(___);
                 let ___Value = await page.evaluate(el => el.innerText, ___Selector);
                 ___Value = ___Value.trim();
-
                 testObject.___ = ___Value;
                 */
             
@@ -260,7 +267,6 @@ async function getAppAmount(page){
                 let ___Selector = await page.waitForSelector(___);
                 let ___Value = await page.evaluate(el => el.innerText, ___Selector);
                 ___Value = ___Value.trim();
-
                 testObject.___ = ___Value;
                 */
             }
@@ -269,7 +275,7 @@ async function getAppAmount(page){
 
     testArrayJSON = JSON.stringify(testArray);
     var fs = require('fs');
-    fs.writeFile("2020-11-05_viewed_app_amount_with_level_2.json", testArrayJSON, function(err) {
+    fs.writeFile(FILE_NAME, testArrayJSON, function(err) {
         if (err) {
             console.log(err);
         }
@@ -290,4 +296,4 @@ async function scrape(email, password){
 
 // Get email
 // Get password
-scrape('', '').catch(console.error);
+scrape(YOUR_EMAIL, YOUR_PASSWORD).catch(console.error);

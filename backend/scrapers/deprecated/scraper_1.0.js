@@ -1,3 +1,13 @@
+////////    SET UP VARIABLES HERE   ////////
+
+const YOUR_EMAIL = '@uwaterloo.ca';
+const YOUR_PASSWORD = '';
+const startPageNumber = 3;
+const endPageNumber = 15;
+const FILE_NAME = '2021-MM-DD.json';
+
+////////////////////////////////////////////
+
 const puppeteer = require('puppeteer');
 
 async function setup(email, password, page){
@@ -16,8 +26,8 @@ async function setup(email, password, page){
 }
 
 async function getJobInfo(page){
-    const startPageNumber = 3;
-    const endPageNumber = 15;
+    // const startPageNumber = 3;
+    // const endPageNumber = 15;
 
     // Get total amount of jobs
     await page.waitForSelector('.badge-info');
@@ -30,7 +40,7 @@ async function getJobInfo(page){
 
     testArray = [];
 
-    // for(var a = 3; a < totalPages + 3; a++){ //endPageNumber
+    // for(var a = 3; a < endPageNumber + 3; a++){ //endPageNumber
     for(var a = startPageNumber; a < totalPages + 3; a++){ 
 
         // // Not sure why I put this here
@@ -613,7 +623,7 @@ async function getJobInfo(page){
 
     testArrayJSON = JSON.stringify(testArray);
     var fs = require('fs');
-    fs.writeFile("2020-10-17.json", testArrayJSON, function(err) {
+    fs.writeFile(FILE_NAME, testArrayJSON, function(err) {
         if (err) {
             console.log(err);
         }
@@ -635,4 +645,4 @@ async function scrape(email, password){
 
 // Get email
 // Get password
-scrape('@uwaterloo.ca', '').catch(console.error);
+scrape(YOUR_EMAIL, YOUR_PASSWORD).catch(console.error);

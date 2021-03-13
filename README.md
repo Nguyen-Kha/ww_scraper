@@ -1,6 +1,6 @@
 # Setup
-npm install
-npm install puppeteer
+- npm install
+- npm install puppeteer
 
 # How to run scraper
 To run a scraper

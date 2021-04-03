@@ -1,3 +1,5 @@
 ww/
 node_modules/
 backend/data
+.env
+backend/data_cleaning/testing.py

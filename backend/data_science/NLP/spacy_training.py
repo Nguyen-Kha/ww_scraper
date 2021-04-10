@@ -10,6 +10,7 @@ from spacy.training import Example
 import warnings
 import os
 from dotenv import load_dotenv
+import csv
 
 nlp = spacy.load('en_core_web_sm')
 load_dotenv()
@@ -18,6 +19,11 @@ mongo_connection = os.getenv('LOCAL_MONGO')
 client = MongoClient(mongo_connection)
 db = client['WW_Local']
 NLP_jobs_collection = db['NLPJobsLocal']
+
+# x = NLP_jobs_collection.aggregate([
+#         { "$sample": { "size": 1 } }
+#     ])
+# print(list(x)[0]['jobID'])
 
 
 ner = nlp.get_pipe('ner')
@@ -278,6 +284,26 @@ with nlp.disable_pipes(*unaffected_pipes), warnings.catch_warnings():
 #     print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
 
 # testing_string = "Qualifications: Enrolled in computer science, computer engineering, or related disciplines 1+ year working experience with object-oriented programming (Java / Python) or JavaScript programming Familiarity with *nix Operating System is an asset Working experiences in software development lifecycle Interest in solving technical problems Solid communication skills A first rate academic record is desired   Technologies you may experience with us: Java, Node.js, Python, Vue.js, Knockout.js Amazon Web Services (EC2, Lambda, CloudFormation, DynamoDB, S3, SQS, SNS, etc.) Apache Kafka, Apache Airflow, Redis, PostgreSQL Databricks, Data Catalog, h2o AI framework GitHub, Bitbucket, Jenkins   We offer competitive salary, flexible work hours, and a great work environment.  Our office lounge has a foosball table, basketball arcade, boardgames and video game consoles, and provides free fruit, coffee, and soft drinks."
-testing_string = "The student will manage large dataset in Unix. He or she will design database in SQL to facilitate the analysis. The student will create scripts (r, python or matlab) to modify the analytical pipeline."
-doc = nlp(testing_string)
-print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+# testing_string = "The student will manage large dataset in Unix. He or she will design database in SQL to facilitate the analysis. The student will create scripts (r, python or matlab) to modify the analytical pipeline."
+# doc = nlp(testing_string)
+# print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+
+with open('backend/data_science/csv/model_sample.csv', 'w+') as csv_file:
+    # (NLP_jobs_collection.find_one({}))['responsibilities']
+    writer = csv.writer(csv_file)
+    writer.writerow(['jobID', 'skills', 'keywords'])
+    for i in range(0, 100):
+        mongo_x = NLP_jobs_collection.aggregate([
+                { "$sample": { "size": 1 } }
+            ])
+        
+        x = list(mongo_x)[0]
+        
+        keywords_nlp = nlp(x['skills'])
+        keywords = ""
+        for ent in keywords_nlp.ents:
+            if(ent.label_ == 'TECHNOLOGY'):
+                keywords = keywords + ', ' + str(ent.text)
+        
+        writer.writerow([x['jobID'], x['skills'], keywords])
+        

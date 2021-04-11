@@ -1,3 +1,8 @@
 ww/
 node_modules/
 backend/data
+.env
+backend/data_cleaning/testing.py
+logs/
+backend/data_science/NLP/.ipynb_checkpoints
+.vscode

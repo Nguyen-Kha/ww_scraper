@@ -2,8 +2,8 @@
 import pymongo
 import os
 from pymongo import MongoClient
-from dotenv import load_dotenv
 import datetime
+from dotenv import load_dotenv
 
 load_dotenv()
 uri = os.getenv('ATLAS_URI')
@@ -35,7 +35,15 @@ for raw_job in rawjobs_collection.find():
 
         # Convert the \n to \\n for web version
         # Convert the \n to space for NLP version
-        if(('\n' in raw_job['summary']) or ('\n' in raw_job['responsibilities']) or ('\n' in raw_job['skills']) or ('\n' in raw_job['housing']) or ('\n' in raw_job['compensation'])):
+        # Add appInfo, specialRequirements
+        if(('\n' in raw_job['summary']) or 
+            ('\n' in raw_job['responsibilities']) or 
+            ('\n' in raw_job['skills']) or 
+            ('\n' in raw_job['housing']) or 
+            ('\n' in raw_job['compensation']) or
+            ('\n' in raw_job['appInfo']) or
+            ('\n' in raw_job['specialRequirements'])
+            ):
             try:
                 raw_job['summary'] = raw_job['summary'].replace('\n', ' ')
             except: 
@@ -58,6 +66,16 @@ for raw_job in rawjobs_collection.find():
 
             try:
                 raw_job['compensation'] = raw_job['compensation'].replace('\n', ' ')
+            except: 
+                pass
+            
+            try:
+                raw_job['appInfo'] = raw_job['appInfo'].replace('\n', ' ')
+            except: 
+                pass
+
+            try:
+                raw_job['specialRequirements'] = raw_job['specialRequirements'].replace('\n', ' ')
             except: 
                 pass
 
@@ -85,4 +103,4 @@ for raw_job in rawjobs_collection.find():
         except:
             print('Error: ' + raw_job['jobID'])
     except:
-        print('Error: ' + raw_job)
+        print('Error: ' + str(raw_job))

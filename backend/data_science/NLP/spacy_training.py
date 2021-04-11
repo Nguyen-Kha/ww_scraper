@@ -291,5 +291,5 @@ def output_sample_csv(nlp):
             
             writer.writerow([x['jobID'], x['skills'], keywords])
 
-output_directory = 'backend/data_science/NLP/models'
+output_directory = 'backend/data_science/NLP/models/tech_iteration_1'
 nlp.to_disk(output_directory)

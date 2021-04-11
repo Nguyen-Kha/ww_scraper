@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 import sys
 
-nlp = spacy.load('backend/data_science/NLP/models')
+nlp = spacy.load('backend/data_science/NLP/models/tech_iteration_1')
 load_dotenv()
 mongo_connection = os.getenv('ATLAS_URI')
 

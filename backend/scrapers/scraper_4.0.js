@@ -153,7 +153,44 @@ async function getJobInfo(page){
                 await newPage.click(WTRSelector);
                 await newPage.waitFor(2000);
 
-                // Hired Table - Relatively easy: O(n) parse, key value
+                const overallWTRStart = 'div.tab-content > div > div > div.boxContent > ';
+
+                // Hired Table
+                let WTRHiringTableSelector = '';
+                WTRHiringTableSelector = WTRHiringTableSelector.concat(overallWTRStart, 'div:nth-child(3) > div > div:nth-child(5) > table');
+
+                // TODO: Refactor cell extraction
+                let hiringKeys = [];
+                const WTRHiringTableHeaderSelector = WTRHiringTableSelector + ' >  thead > tr';
+                const WTRHiringTableColumnCount = await scraper.getchildElementCount(newPage, WTRHiringTableHeaderSelector);
+                // the nth child starts on 3 for all job postings
+                for(let i = 3; i < WTRHiringTableColumnCount + 1; i++){
+                    let tempWTRHiringHeaderCellSelector = '';
+                    tempWTRHiringHeaderCellSelector = tempWTRHiringHeaderCellSelector.concat(WTRHiringTableHeaderSelector, ' > th:nth-child(', i, ')');
+                    let headerValue = await scraper.getinnerText(newPage, tempWTRHiringHeaderCellSelector); 
+                    hiringKeys.push(headerValue);
+                }
+
+                let hiredValues = [];
+                const WTRHiringTableValuerSelector = WTRHiringTableSelector + ' >  tbody > tr';
+                for(let i = 3; i < WTRHiringTableColumnCount + 1; i++){
+                    let tempWTRHiringValueCellSelector = '';
+                    tempWTRHiringValueCellSelector = tempWTRHiringValueCellSelector.concat(WTRHiringTableValuerSelector, ' > td:nth-child(', i, ')');
+                    let cellValue = await scraper.getInnerText(newPage, tempWTRHiringValueCellSelector);
+                    hiredValues.push(cellValue);
+                }
+
+                // Construct JSON Object
+                let hiredTableObject = {};
+                hiringKeys.forEach((key, value) => {
+                    hiredTableObject[key] = hiredValues[value];
+                });
+
+                testObject.hiredPerTerm = hiredTableObject;
+
+                // Hires By Faculty Graph
+                const hiresByFaculty = overallWTRStart + 'div:nth-child(4) > div > div > div > svg > g.highcharts-tracker'
+                
 
                 // Graphs have these for classes
                 /*

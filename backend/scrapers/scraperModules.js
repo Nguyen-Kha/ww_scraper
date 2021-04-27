@@ -5,6 +5,24 @@ async function getInnerText(context, selectorString){
     return selectorValue;
 }
 
+async function getchildElementCount(context, selector){
+    /*
+    Gets the amount of child elements in the selector given
+    INPUTS:
+    context: the page that it is on
+    selector: (str) - selector used in document.querySelector()
+
+    RETURNS:
+    count: (int)
+    */
+
+//    let element = await context.$(selector);
+    let element = await context.waitForSelector(selector);
+    let count = await context.evaluate(el => el.childElementCount, element);
+    count = parseInt(count);
+    return count;
+}
+
 async function setup(email, password, context){
     await context.goto('https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login');
     try{
@@ -207,6 +225,7 @@ function assignJobAppValues(testObject, jobAppInfoHeader, jobAppInfoValue){
 
 module.exports = {
     getInnerText,
+    getchildElementCount,
     setup,
     reLogin,
     getTotalAmountOfJobs,

@@ -10,6 +10,7 @@ const FILE_NAME = '2021-MM-DD.json';
 const puppeteer = require('puppeteer');
 const scraper = require('./scraperModules.js');
 const fs = require('fs');
+const { strict } = require('assert');
 
 async function getJobInfo(page){
     
@@ -172,6 +173,7 @@ async function getJobInfo(page){
                 }
 
                 let hiredValues = [];
+                // TODO: need to scrape the bottom one
                 const WTRHiringTableValuerSelector = WTRHiringTableSelector + ' >  tbody > tr';
                 for(let i = 3; i < WTRHiringTableColumnCount + 1; i++){
                     let tempWTRHiringValueCellSelector = '';
@@ -188,9 +190,28 @@ async function getJobInfo(page){
 
                 testObject.hiredPerTerm = hiredTableObject;
 
-                // Hires By Faculty Graph
-                const hiresByFaculty = overallWTRStart + 'div:nth-child(4) > div > div > div > svg > g.highcharts-tracker'
-                
+                // Hires By Faculty Chart
+                /*
+                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(4) > div > div > div > svg > 
+                g.highcharts-tracker > g:nth-child(3) > text > tspan:nth-child(1)').innerHTML
+
+                g:nth-child() has 2x of the total slices in the pie. the latter half contains the info 
+                ex 4 slices - g has children: path path path path g g g g. the g's will have child text. text has the two tspans that have the info
+                */
+                const hiresByFaculty = overallWTRStart + 'div:nth-child(4) > div > div > div > svg > g.highcharts-tracker';
+                const facultyPieSections = await scraper.getchildElementCount(newPage, hiresByFaculty);
+                let facultyHiresObject = {};
+                for(let i = (facultyPieSections / 2) + 1; i < facultyPieSections + 1; i++){
+                    let facultyHiresKeySelector = hiresByFaculty + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(1)';
+                    let facultyHiresValueSelector = hiresByFaculty + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(2)';
+                    let facultyHiresKey = await scraper.getinnerHTML(newPage, facultyHiresKeySelector);
+                    let facultyHiresValue = (await scraper.getinnerHTML(newPage, facultyHiresValueSelector)).replace(': ', '');
+
+                    facultyHiresObject[facultyHiresKey] = facultyHiresValue;
+                }
+                testObject.facultyHires = facultyHiresObject;
+
+                // Hires by Student Work Term Number Chart
 
                 // Graphs have these for classes
                 /*

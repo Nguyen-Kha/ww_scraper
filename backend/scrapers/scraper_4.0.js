@@ -198,7 +198,7 @@ async function getJobInfo(page){
                 g:nth-child() has 2x of the total slices in the pie. the latter half contains the info 
                 ex 4 slices - g has children: path path path path g g g g. the g's will have child text. text has the two tspans that have the info
                 */
-                const hiresByFaculty = overallWTRStart + 'div:nth-child(4) > div > div > div > svg > g.highcharts-tracker';
+                const hiresByFaculty = overallWTRStart + 'div:nth-child(4) > div:nth-child(1) > div > div > svg > g.highcharts-tracker';
                 const facultyPieSections = await scraper.getchildElementCount(newPage, hiresByFaculty);
                 let facultyHiresObject = {};
                 for(let i = (facultyPieSections / 2) + 1; i < facultyPieSections + 1; i++){
@@ -212,6 +212,19 @@ async function getJobInfo(page){
                 testObject.facultyHires = facultyHiresObject;
 
                 // Hires by Student Work Term Number Chart
+                // This works the same as the Hires per Faculty chart. Refactor into a function that takes in the hiresBy___ selector
+                const hiresByStudentWT = overallWTRStart + 'div:nth-child(4) > div:nth-child(2) > div > div > svg > g.highcharts-tracker';
+                const studentWTPieSections = await scraper.getchildElementCount(newPage, hiresByStudentWT);
+                let studentWTHiresObject = {};
+                for(let i = (studentWTPieSections / 2) + 1; i < studentWTPieSections + 1; i++){
+                    let studentWTHiresKeySelector = hiresByStudentWT + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(1)';
+                    let studentWTHiresValueSelector = hiresByStudentWT + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(2)';
+                    let studentWTHiresKey = await scraper.getinnerHTML(newPage, studentWTHiresKeySelector);
+                    let studentWTHiresValue = (await scraper.getinnerHTML(newPage, studentWTHiresValueSelector)).replace(': ' , '');
+
+                    studentWTHiresObject[studentWTHiresKey] = studentWTHiresValue;
+                }
+                testObject.studentWorkTermHires = studentWTHiresObject;
 
                 // Graphs have these for classes
                 /*

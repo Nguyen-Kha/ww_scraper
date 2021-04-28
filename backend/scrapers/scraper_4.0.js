@@ -226,6 +226,30 @@ async function getJobInfo(page){
                 }
                 testObject.studentWorkTermHires = studentWTHiresObject;
 
+                // Hired Programs
+                const hiredProgramsSelector = overallWTRStart + 'div:nth-child(5) > div > div > div > svg';
+                const hiredProgramsKeyStart = hiredProgramsSelector + ' > g.highcharts-xaxis-labels';
+                const hiredProgramsValueStart = hiredProgramsSelector + ' > g.highcharts-tracker';
+
+                const hiredProgramsKeyCount = await scraper.getchildElementCount(newPage, hiredProgramsKeyStart);
+                const hiredProgramsValueCount = await scraper.getchildElementCount(newPage, hiredProgramsValueStart);
+
+                let hiredProgramsObject = {};
+                for(let i = 1; (i < hiredProgramsKeyCount + 1) && (hiredProgramsKeyCount == hiredProgramsValueCount); i++){
+                    let hiredProgramsKeySelector = hiredProgramsKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let hiredProgramsValueSelector = hiredProgramsValueStart + ' > g:nth-child(' + i + ') > text > tspan';
+
+                    let hiredProgramsKey = await scraper.getinnerHTML(newPage, hiredProgramsKeySelector);
+                    let hiredProgramsValue = await scraper.getinnerHTML(newPage, hiredProgramsValueSelector);
+                    hiredProgramsObject[hiredProgramsKey] = hiredProgramsValue;
+                }
+
+                // Work Term Rating
+
+                // Work Term Satisfaction Distribution
+
+                // Questions TODO: which bar graph to do
+
                 // Graphs have these for classes
                 /*
                 highcharts-data-labels highcharts-tracker

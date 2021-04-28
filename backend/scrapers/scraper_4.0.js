@@ -10,7 +10,6 @@ const FILE_NAME = '2021-MM-DD.json';
 const puppeteer = require('puppeteer');
 const scraper = require('./scraperModules.js');
 const fs = require('fs');
-const { strict } = require('assert');
 
 async function getJobInfo(page){
     
@@ -243,12 +242,63 @@ async function getJobInfo(page){
                     let hiredProgramsValue = await scraper.getinnerHTML(newPage, hiredProgramsValueSelector);
                     hiredProgramsObject[hiredProgramsKey] = hiredProgramsValue;
                 }
+                testObject.hiredPrograms = hiredProgramsObject;
 
-                // Work Term Rating
+                // Work Term Rating - it's the second one
+                /*
+                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(6)
+                 > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td:nth-child(3)').innerText
+                */
+                const ratingSelector = overallWTRStart + 'div:nth-child(6) > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td:nth-child(3)';
+                let ratingValue = parseFloat(await scraper.getInnerText(newPage, ratingSelector));
+                testObject.rating = ratingValue;
 
                 // Work Term Satisfaction Distribution
+                /*
+                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(7)
+                 > div > div > div > svg > g.highcharts-xaxis-labels > text:nth-child(2) > tspan').innerHTML
+
+                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(7)
+                 > div > div > div > svg > g.highcharts-tracker > g:nth-child(2) > text > tspan').innerHTML
+                */
+                const WTSatisfactionSelector = overallWTRStart + 'div:nth-child(7) > div > div > div > svg';
+                const WTSatisfactionKeyStart = WTSatisfactionSelector + ' > g.highcharts-xaxis-labels';
+                const WTSatisfactionValueStart = WTSatisfactionSelector + ' > g.highcharts-tracker';
+
+                const WTSatisfactionKeyCount = await scraper.getchildElementCount(newPage, WTSatisfactionKeyStart);
+                const WTSatisfactionValueCount = await scraper.getchildElementCount(newPage, WTSatisfactionValueStart);
+
+                let WTSatisfactionObject = {};
+                for(let i = 1; (i < WTSatisfactionKeyCount + 1) && (WTSatisfactionKeyCount == WTSatisfactionValueCount); i++){
+                    let WTSatisfactionKeySelector = WTSatisfactionKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let WTSatisfactionValueSelector = WTSatisfactionValueStart + ' > g:nth-child(' + i + ') > text > tspan';
+
+                    let WTSatisfactionKey = await scraper.getinnerHTML(newPage, WTSatisfactionKeySelector);
+                    let WTSatisfactionValue = await scraper.getinnerHTML(newPage, WTSatisfactionValueSelector);
+                    WTSatisfactionObject[WTSatisfactionKey] = WTSatisfactionValue;
+                }
+                testObject.workTermSatisfaction = WTSatisfactionObject;
 
                 // Questions TODO: which bar graph to do
+                const questionRatingSelector = overallWTRStart + 'div:nth-child(8) > div > div > div > svg';
+                const questionRatingKeyStart = questionRatingSelector + ' > g.highcharts-xaxis-labels';
+                const questionRatingValueStart = questionRatingSelector + ' > g.highcharts-tracker';
+
+                const questionRatingKeyCount = await scraper.getchildElementCount(newPage, questionRatingKeyStart);
+                const questionRatingValueCount = await scraper.getchildElementCount(newPage, questionRatingValueStart);
+
+                let questionRatingObject = {};
+                for(let i = 1; (i < questionRatingKeyCount + 1) && (questionRatingKeyCount == questionRatingValueCount); i++){
+                    let questionRatingKeySelector = questionRatingKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let questionRatingValueSelector = questionRatingValueStart + ' > g:nth-child(' + i + ') > text > tspan';
+
+                    let questionRatingKey = await scraper.getinnerHTML(newPage, questionRatingKeySelector);
+                    let questionRatingValue = await scraper.getinnerHTML(newPage, questionRatingValueSelector);
+
+                    questionRatingValue = questionRating.slice(0, 2);
+                    questionRatingObject[questionRatingKey] = questionRatingValue;
+                }
+                testObject.questionRating = questionRatingObject;
 
                 // Graphs have these for classes
                 /*

@@ -134,23 +134,22 @@ async function getJobInfo(page){
             try{
                 // Click Work Term Ratings if Present
                 // Iterate through ul and find an li with a with text 'Work Term Ratings'
-                let navPostingOptions = document.querySelector(".nav-pills").childNodes;
-                let navPostingWTR;
-                let WTRSelector = '';
-                let liCount = 0;
-                for(let i = 1; i < navPostingOptions.length + 1; i++){
-                    if(navPostingOptions[i].tagName == "LI"){
-                        liCount++;
-                    }
-                    if(navPostingOptions[i].tagName =="LI" && navPostingOptions[i].innerText.includes('Work Term Ratings')){
-                        navPostingWTR = navPostingOptions[i].childNodes;
-                        WTRSelector = WTRSelector.concat('ul.nav-pills > li:nth-child(', liCount, ') > a');
+                const navPostingOptions = '.nav-pills';
+                const navPostingOptionsCount = await scraper.getchildElementCount(newPage, navPostingOptions);
+                for(let i = 1; i < navPostingOptionsCount + 1; i++){
+                    let navPostingOptionSelector;
+                    let navPostingOptionValue;
+                    try{
+                        navPostingOptionSelector = navPostingOptions + ' > li:nth-child(' + i + ') > a';
+                        navPostingOptionValue = await scraper.getInnerText(newPage, navPostingOptionSelector);
+                    } catch(e){}
+                    
+                    if(navPostingOptionValue.includes('Work Term Ratings')){
+                        await newPage.click(navPostingOptionSelector);
                         break;
                     }
+
                 }
-                
-                // Click Selector
-                await newPage.click(WTRSelector);
                 await newPage.waitFor(2000);
 
                 const overallWTRStart = 'div.tab-content > div > div > div.boxContent > ';
@@ -167,17 +166,17 @@ async function getJobInfo(page){
                 for(let i = 3; i < WTRHiringTableColumnCount + 1; i++){
                     let tempWTRHiringHeaderCellSelector = '';
                     tempWTRHiringHeaderCellSelector = tempWTRHiringHeaderCellSelector.concat(WTRHiringTableHeaderSelector, ' > th:nth-child(', i, ')');
-                    let headerValue = await scraper.getinnerText(newPage, tempWTRHiringHeaderCellSelector); 
+                    let headerValue = await scraper.getInnerText(newPage, tempWTRHiringHeaderCellSelector); 
                     hiringKeys.push(headerValue);
                 }
 
                 let hiredValues = [];
                 // TODO: need to scrape the bottom one
-                const WTRHiringTableValuerSelector = WTRHiringTableSelector + ' >  tbody > tr';
+                const WTRHiringTableValuerSelector = WTRHiringTableSelector + ' >  tbody > tr:nth-child(2)';
                 for(let i = 3; i < WTRHiringTableColumnCount + 1; i++){
                     let tempWTRHiringValueCellSelector = '';
                     tempWTRHiringValueCellSelector = tempWTRHiringValueCellSelector.concat(WTRHiringTableValuerSelector, ' > td:nth-child(', i, ')');
-                    let cellValue = await scraper.getInnerText(newPage, tempWTRHiringValueCellSelector);
+                    let cellValue = parseInt(await scraper.getInnerText(newPage, tempWTRHiringValueCellSelector));
                     hiredValues.push(cellValue);
                 }
 
@@ -219,6 +218,9 @@ async function getJobInfo(page){
                     let studentWTHiresKeySelector = hiresByStudentWT + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(1)';
                     let studentWTHiresValueSelector = hiresByStudentWT + ' > g:nth-child(' + String(i) + ') > text > tspan:nth-child(2)';
                     let studentWTHiresKey = await scraper.getinnerHTML(newPage, studentWTHiresKeySelector);
+                    if(studentWTHiresKey.includes('+')){
+                        studentWTHiresKey = studentWTHiresKey.replace(' +', '');
+                    }
                     let studentWTHiresValue = (await scraper.getinnerHTML(newPage, studentWTHiresValueSelector)).replace(': ' , '');
 
                     studentWTHiresObject[studentWTHiresKey] = studentWTHiresValue;
@@ -235,32 +237,21 @@ async function getJobInfo(page){
 
                 let hiredProgramsObject = {};
                 for(let i = 1; (i < hiredProgramsKeyCount + 1) && (hiredProgramsKeyCount == hiredProgramsValueCount); i++){
-                    let hiredProgramsKeySelector = hiredProgramsKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let hiredProgramsKeySelector = hiredProgramsKeyStart + ' > text:nth-child(' + i + ') > tspan';
                     let hiredProgramsValueSelector = hiredProgramsValueStart + ' > g:nth-child(' + i + ') > text > tspan';
 
                     let hiredProgramsKey = await scraper.getinnerHTML(newPage, hiredProgramsKeySelector);
-                    let hiredProgramsValue = await scraper.getinnerHTML(newPage, hiredProgramsValueSelector);
+                    let hiredProgramsValue = parseInt(await scraper.getinnerHTML(newPage, hiredProgramsValueSelector));
                     hiredProgramsObject[hiredProgramsKey] = hiredProgramsValue;
                 }
                 testObject.hiredPrograms = hiredProgramsObject;
 
                 // Work Term Rating - it's the second one
-                /*
-                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(6)
-                 > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td:nth-child(3)').innerText
-                */
                 const ratingSelector = overallWTRStart + 'div:nth-child(6) > div > div:nth-child(5) > table > tbody > tr:nth-child(2) > td:nth-child(3)';
                 let ratingValue = parseFloat(await scraper.getInnerText(newPage, ratingSelector));
                 testObject.rating = ratingValue;
 
                 // Work Term Satisfaction Distribution
-                /*
-                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(7)
-                 > div > div > div > svg > g.highcharts-xaxis-labels > text:nth-child(2) > tspan').innerHTML
-
-                document.querySelector('div.tab-content > div > div > div.boxContent > div:nth-child(7)
-                 > div > div > div > svg > g.highcharts-tracker > g:nth-child(2) > text > tspan').innerHTML
-                */
                 const WTSatisfactionSelector = overallWTRStart + 'div:nth-child(7) > div > div > div > svg';
                 const WTSatisfactionKeyStart = WTSatisfactionSelector + ' > g.highcharts-xaxis-labels';
                 const WTSatisfactionValueStart = WTSatisfactionSelector + ' > g.highcharts-tracker';
@@ -270,7 +261,7 @@ async function getJobInfo(page){
 
                 let WTSatisfactionObject = {};
                 for(let i = 1; (i < WTSatisfactionKeyCount + 1) && (WTSatisfactionKeyCount == WTSatisfactionValueCount); i++){
-                    let WTSatisfactionKeySelector = WTSatisfactionKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let WTSatisfactionKeySelector = WTSatisfactionKeyStart + ' > text:nth-child(' + i + ')';
                     let WTSatisfactionValueSelector = WTSatisfactionValueStart + ' > g:nth-child(' + i + ') > text > tspan';
 
                     let WTSatisfactionKey = await scraper.getinnerHTML(newPage, WTSatisfactionKeySelector);
@@ -279,7 +270,7 @@ async function getJobInfo(page){
                 }
                 testObject.workTermSatisfaction = WTSatisfactionObject;
 
-                // Questions TODO: which bar graph to do
+                // Questions
                 const questionRatingSelector = overallWTRStart + 'div:nth-child(8) > div > div > div > svg';
                 const questionRatingKeyStart = questionRatingSelector + ' > g.highcharts-xaxis-labels';
                 const questionRatingValueStart = questionRatingSelector + ' > g.highcharts-tracker';
@@ -289,22 +280,16 @@ async function getJobInfo(page){
 
                 let questionRatingObject = {};
                 for(let i = 1; (i < questionRatingKeyCount + 1) && (questionRatingKeyCount == questionRatingValueCount); i++){
-                    let questionRatingKeySelector = questionRatingKeyStart + ' > text:nth-child(' + i + ' > tspan';
+                    let questionRatingKeySelector = questionRatingKeyStart + ' > text:nth-child(' + i + ') > tspan';
                     let questionRatingValueSelector = questionRatingValueStart + ' > g:nth-child(' + i + ') > text > tspan';
 
                     let questionRatingKey = await scraper.getinnerHTML(newPage, questionRatingKeySelector);
-                    let questionRatingValue = await scraper.getinnerHTML(newPage, questionRatingValueSelector);
+                    let questionRatingValue = parseFloat(await scraper.getinnerHTML(newPage, questionRatingValueSelector));
 
-                    questionRatingValue = questionRating.slice(0, 2);
+                    questionRatingKey = questionRatingKey.slice(0, 2);
                     questionRatingObject[questionRatingKey] = questionRatingValue;
                 }
                 testObject.questionRating = questionRatingObject;
-
-                // Graphs have these for classes
-                /*
-                highcharts-data-labels highcharts-tracker
-                highcharts-axis-labels highcharts-xaxis-labels
-                */
 
             } catch(e){}
     

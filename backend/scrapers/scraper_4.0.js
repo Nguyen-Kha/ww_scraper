@@ -130,7 +130,7 @@ async function getJobInfo(page){
                 testObject = scraper.assignJobAppValues(testObject, jobAppInfoHeader, jobAppInfoValue);
             }
 
-            // TODO: Work Term Ratings
+            // Work Term Ratings
             try{
                 await scraper.toggleWorkTermRatings(newPage);
                 try{
@@ -155,7 +155,10 @@ async function getJobInfo(page){
                     testObject.questionRating = await scraper.parseQuestionChart(newPage);
                 } catch(e){}
 
-            } catch(e){}
+            } 
+            catch(e){
+                console.log(e);
+            }
     
             await newPage.close();
             await page.bringToFront();
@@ -269,6 +272,35 @@ async function getJobInfo(page){
                 let jobAppInfoValue = await scraper.getInnerText(newPage, jobAppInfoValueElementSelector);
                 
                 testObject = scraper.assignJobAppValues(testObject, jobAppInfoHeader, jobAppInfoValue);
+            }
+
+            try{
+                await scraper.toggleWorkTermRatings(newPage);
+                try{
+                    testObject.hiredPerTerm = await scraper.parseHiringTable(newPage);
+                } catch(e){}
+                try{
+                    testObject.facultyHires = await scraper.parseFacultyPieChart(newPage);
+                } catch(e){}
+                try{
+                    testObject.studentWorkTermHires = await scraper.parseStudentWTPieChart(newPage);
+                } catch(e){}
+                try{
+                    testObject.hiredPrograms = await scraper.parseHiredProgramsBarChart(newPage);
+                } catch(e){}
+                try{
+                    testObject.rating = await scraper.getWorkTermRatingScore(newPage);
+                } catch(e){}
+                try{
+                    testObject.workTermSatisfaction = await scraper.parseWTSBarChart(newPage);
+                } catch(e){}
+                try{
+                    testObject.questionRating = await scraper.parseQuestionChart(newPage);
+                } catch(e){}
+
+            } 
+            catch(e){
+                console.log(e);
             }
     
             await newPage.close();

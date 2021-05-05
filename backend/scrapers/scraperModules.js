@@ -3,7 +3,7 @@ const overallWTRStart = 'div.tab-content > div > div > div.boxContent > ';
 ////////////////////////////////////////////
 
 async function getInnerText(context, selectorString){
-    let selector = await context.waitForSelector(selectorString);
+    let selector = await context.waitForSelector(selectorString, {timeout: 5000});
     let selectorValue = await context.evaluate(el => el.innerText, selector);
     selectorValue = selectorValue.trim(); 
     return selectorValue;
@@ -21,7 +21,7 @@ async function getchildElementCount(context, selector){
     */
 
 //    let element = await context.$(selector);
-    let element = await context.waitForSelector(selector);
+    let element = await context.waitForSelector(selector, {timeout: 5000});
     let count = await context.evaluate(el => el.childElementCount, element);
     count = parseInt(count);
     return count;
@@ -38,7 +38,7 @@ async function getinnerHTML(context, selector){
     value: (str)
     */
 
-    let element = await context.waitForSelector(selector);
+    let element = await context.waitForSelector(selector, {timeout: 5000});
     let value = await context.evaluate(el => el.innerHTML, element);
     value = value.trim();
     return value;

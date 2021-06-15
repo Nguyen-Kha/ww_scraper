@@ -3,7 +3,7 @@ const overallWTRStart = 'div.tab-content > div > div > div.boxContent > ';
 ////////////////////////////////////////////
 
 async function getInnerText(context, selectorString){
-    let selector = await context.waitForSelector(selectorString, {timeout: 5000});
+    let selector = await context.waitForSelector(selectorString, {timeout: 1000});
     let selectorValue = await context.evaluate(el => el.innerText, selector);
     selectorValue = selectorValue.trim(); 
     return selectorValue;
@@ -21,7 +21,7 @@ async function getchildElementCount(context, selector){
     */
 
 //    let element = await context.$(selector);
-    let element = await context.waitForSelector(selector, {timeout: 5000});
+    let element = await context.waitForSelector(selector, {timeout: 1000});
     let count = await context.evaluate(el => el.childElementCount, element);
     count = parseInt(count);
     return count;
@@ -38,7 +38,7 @@ async function getinnerHTML(context, selector){
     value: (str)
     */
 
-    let element = await context.waitForSelector(selector, {timeout: 5000});
+    let element = await context.waitForSelector(selector, {timeout: 1000});
     let value = await context.evaluate(el => el.innerHTML, element);
     value = value.trim();
     return value;
@@ -47,8 +47,10 @@ async function getinnerHTML(context, selector){
 ////////////////////////////////////////////
 
 async function setup(email, password, context){
+    await context.waitFor(5000);
     await context.goto('https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login');
     try{
+        await context.waitFor(2000);
         await context.click('#userNameInput');
         await context.keyboard.type(email);
         await context.click('#nextButton');
@@ -60,6 +62,19 @@ async function setup(email, password, context){
     }
     catch(e){
         console.log(e);
+        await context.waitFor(5000);
+        try{
+            await context.click('#userNameInput');
+            await context.keyboard.type(email);
+            await context.click('#nextButton');
+            await context.click('#passwordInput');
+            await context.keyboard.type(password);
+            await context.click('#submitButton');
+            await context.waitForNavigation();
+            await context.waitFor(30000);
+        } catch (e) {
+            console.log(e);
+        }
     }
     await context.goto('https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm');
     await context.click('#widgetSearch > div > input');
@@ -413,7 +428,7 @@ async function parseQuestionChart(context){
     let objectKeys = Object.keys(questionObject);
     let objectValues = Object.values(questionObject);
     objectValues.forEach((el, i) => {
-        objectValues[i] = parseInt(el);
+        objectValues[i] = parseFloat(el);
     });
     // slice Key
     objectKeys.forEach((el, i) => {

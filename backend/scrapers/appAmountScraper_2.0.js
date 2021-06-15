@@ -4,9 +4,9 @@ Script must be run on Tuesday after 9:00 AM, before looking at new jobs
 
 ////////    SET UP VARIABLES HERE   ////////
 
-const YOUR_EMAIL = '@uwaterloo.ca';
+const YOUR_EMAIL = 'kh8nguye@uwaterloo.ca';
 const YOUR_PASSWORD = '';
-const FILE_NAME = '2021-MM-DD_viewed_app_amount.json';
+const FILE_NAME = '2021-05-18_viewed_app_amount.json';
 
 ////////////////////////////////////////////
 
@@ -86,6 +86,16 @@ async function getAppAmount(page){
 
                 testObject.companyName = companyNameValue;
 
+                // async function getBasicJobTitle(){}
+                let jobTitle = '';
+                const jobTitleEnding = ') > td:nth-child(4)';
+                jobTitle = jobTitle.concat(starting, i, jobTitleEnding);
+                let jobTitleSelector = await page.waitForSelector(jobTitle);
+                let jobTitleValue = await page.evaluate(el => el.innerText, jobTitleSelector);
+                jobTitleValue = jobTitleValue.trim();
+
+                testObject.title = jobTitleValue;
+
                 // async function getBasicJobOpenings(){}
                 let openings = '';
                 const openingsEnding = ') > td:nth-child(7)';
@@ -107,18 +117,18 @@ async function getAppAmount(page){
 
                 testObject.city = cityValue;
 
-                let level = '';
-                const levelEnding = ') > td:nth-child(10)';
-                level = level.concat(starting, i, levelEnding);
-                let levelSelector = await page.waitForSelector(level);
-                let levelValue = await page.evaluate(el => el.innerText, levelSelector);
-                temp = levelValue.split(', ');
-                if(temp.length == 1){
-                    testObject.level = levelValue;
-                }
-                else {
-                    testObject.level = temp;
-                }
+                // let level = '';
+                // const levelEnding = ') > td:nth-child(10)';
+                // level = level.concat(starting, i, levelEnding);
+                // let levelSelector = await page.waitForSelector(level);
+                // let levelValue = await page.evaluate(el => el.innerText, levelSelector);
+                // temp = levelValue.split(', ');
+                // if(temp.length == 1){
+                //     testObject.level = levelValue;
+                // }
+                // else {
+                //     testObject.level = temp;
+                // }
 
                 // async function getApplicationAmount(){}
                 let applications = '';
@@ -194,6 +204,16 @@ async function getAppAmount(page){
 
                 testObject.jobID = jobIDValue;
 
+                // async function getBasicJobTitle(){}
+                let jobTitle = '';
+                const jobTitleEnding = ') > td:nth-child(4)';
+                jobTitle = jobTitle.concat(starting, i, jobTitleEnding);
+                let jobTitleSelector = await page.waitForSelector(jobTitle);
+                let jobTitleValue = await page.evaluate(el => el.innerText, jobTitleSelector);
+                jobTitleValue = jobTitleValue.trim();
+
+                testObject.title = jobTitleValue;
+
                 // async function getBasicCompanyName(){}
                 let companyName = '';
                 const companyNameEnding = ') > td:nth-child(5)';
@@ -225,18 +245,18 @@ async function getAppAmount(page){
 
                 testObject.city = cityValue;
 
-                let level = '';
-                const levelEnding = ') > td:nth-child(10)';
-                level = level.concat(starting, i, levelEnding);
-                let levelSelector = await page.waitForSelector(level);
-                let levelValue = await page.evaluate(el => el.innerText, levelSelector);
-                temp = levelValue.split(', ');
-                if(temp.length == 1){
-                    testObject.level = levelValue;
-                }
-                else {
-                    testObject.level = temp;
-                }
+                // let level = '';
+                // const levelEnding = ') > td:nth-child(10)';
+                // level = level.concat(starting, i, levelEnding);
+                // let levelSelector = await page.waitForSelector(level);
+                // let levelValue = await page.evaluate(el => el.innerText, levelSelector);
+                // temp = levelValue.split(', ');
+                // if(temp.length == 1){
+                //     testObject.level = levelValue;
+                // }
+                // else {
+                //     testObject.level = temp;
+                // }
 
                 // async function getApplicationAmount(){}
                 let applications = '';

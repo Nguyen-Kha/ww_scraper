@@ -2,6 +2,26 @@ const overallWTRStart = 'div.tab-content > div > div > div.boxContent > ';
 
 ////////////////////////////////////////////
 
+function generateFileName(){
+    const today = new Date();
+    let date_string = "";
+
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+
+    if(month < 10){
+        month = month.toString();
+        month = "0" + month;
+    }
+    if(day < 10){
+        day = month.toString();
+        day = "0" + day;
+    }
+
+    date_string = today.getFullYear().toString() + "-" + month.toString() + "-" + day.toString() + ".json";
+    return date_string;
+}
+
 async function getInnerText(context, selectorString){
     let selector = await context.waitForSelector(selectorString, {timeout: 1000});
     let selectorValue = await context.evaluate(el => el.innerText, selector);
@@ -450,6 +470,7 @@ async function getWorkTermRatingScore(context){
 }
 
 module.exports = {
+    generateFileName,
     getInnerText,
     getchildElementCount,
     getinnerHTML,

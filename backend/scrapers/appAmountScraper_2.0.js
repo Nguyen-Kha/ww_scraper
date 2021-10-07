@@ -6,7 +6,24 @@ Script must be run on Tuesday after 9:00 AM, before looking at new jobs
 
 const YOUR_EMAIL = 'kh8nguye@uwaterloo.ca';
 const YOUR_PASSWORD = '';
-const FILE_NAME = '2021-05-18_viewed_app_amount.json';
+// const FILE_NAME = '2021-05-18_viewed_app_amount.json';
+
+const today = new Date();
+let FILE_NAME = "";
+
+let month = today.getMonth() + 1;
+let day = today.getDate();
+
+if(month < 10){
+    month = month.toString();
+    month = "0" + month;
+}
+if(day < 10){
+    day = month.toString();
+    day = "0" + day;
+}
+
+FILE_NAME = today.getFullYear().toString() + "-" + month.toString() + "-" + day.toString() + "_viewed_app_amount.json";
 
 ////////////////////////////////////////////
 
@@ -297,7 +314,7 @@ async function getAppAmount(page){
 
     testArrayJSON = JSON.stringify(testArray);
     var fs = require('fs');
-    fs.writeFile(FILE_NAME, testArrayJSON, function(err) {
+    fs.writeFile('backend/data/jobs/' + FILE_NAME, testArrayJSON, function(err) {
         if (err) {
             console.log(err);
         }
